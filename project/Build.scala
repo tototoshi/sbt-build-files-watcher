@@ -9,7 +9,7 @@ object PluginBuild extends Build {
     settings = Project.defaultSettings ++ Seq(
       name := "sbt-build-files-watcher",
       organization := "com.github.tototoshi",
-      version := "0.1.0-SNAPSHOT",
+      version := "0.1.0",
       sbtPlugin := true
     ) ++ publishingSettings
   )
