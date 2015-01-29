@@ -21,9 +21,6 @@ import scala.collection.mutable.{ Map => MutableMap }
 
 object Plugin extends sbt.Plugin {
 
-  val buildFiles = SettingKey[State => Seq[File]]("buildFiles")
-  val buildFilesHash = TaskKey[Map[String, Map[File, Seq[Byte]]]]("buildFilesHash")
-
   var buildFilesHashOnLoad: Option[Map[File, Seq[Byte]]] = None
 
   def getBuildFiles(base: File): Seq[File] = {
@@ -34,7 +31,7 @@ object Plugin extends sbt.Plugin {
     f => f -> collection.mutable.WrappedArray.make[Byte](Hash(f))
   }.toMap
 
-  def buildFiles(state: State): Seq[File] = {
+  def listBuildFiles(state: State): Seq[File] = {
     val structure = Project.structure(state)
     (for {
       proj <- structure.allProjects
@@ -42,24 +39,25 @@ object Plugin extends sbt.Plugin {
     } yield file).distinct
   }
 
-  override lazy val settings = {
-    Seq(
-      shellPrompt := { state =>
-        val projectId = Project.extract(state).currentProject.id
-        val files = buildFiles(state)
-        val message = buildFilesHashOnLoad match {
-          case Some(h) if h != hash(files) =>
-            scala.Console.RED + "Build files changed. Please reload." + scala.Console.RESET + "\n"
-          case Some(_) =>
-            ""
-          case None =>
-            // set initial build file hash
-            buildFilesHashOnLoad = Some(hash(files))
-            ""
-        }
-        message + shellPrompt.value(state)
-      }
-    )
+  val messageOnBuildFilesChanged: State => String = { state =>
+    val files = listBuildFiles(state)
+    buildFilesHashOnLoad match {
+      case Some(h) if h != hash(files) =>
+        scala.Console.RED + "Build files changed. Please reload." + scala.Console.RESET + "\n"
+      case Some(_) =>
+        ""
+      case None =>
+        // set initial build file hash
+        buildFilesHashOnLoad = Some(hash(files))
+        ""
+    }
   }
+
+  val showMessageOnBuildFilesChanged: Setting[_] =
+    shellPrompt := { state =>
+      messageOnBuildFilesChanged(state) + "> "
+    }
+
+  override lazy val settings = Seq.empty
 
 }
