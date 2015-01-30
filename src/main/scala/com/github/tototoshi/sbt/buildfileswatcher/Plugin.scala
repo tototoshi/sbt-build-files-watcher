@@ -21,17 +21,17 @@ import scala.collection.mutable.{ Map => MutableMap }
 
 object Plugin extends sbt.Plugin {
 
-  var buildFilesHashOnLoad: Option[Map[File, Seq[Byte]]] = None
+  private var buildFilesHashOnLoad: Option[Map[File, Seq[Byte]]] = None
 
-  def getBuildFiles(base: File): Seq[File] = {
+  private def getBuildFiles(base: File): Seq[File] = {
     ((base * "*.sbt") +++ ((base / "project") ** ("*.scala" | "*.sbt"))).get
   }
 
-  def hash(files: Seq[File]): Map[File, Seq[Byte]] = files.map {
+  private def hash(files: Seq[File]): Map[File, Seq[Byte]] = files.map {
     f => f -> collection.mutable.WrappedArray.make[Byte](Hash(f))
   }.toMap
 
-  def listBuildFiles(state: State): Seq[File] = {
+  private def listBuildFiles(state: State): Seq[File] = {
     val structure = Project.structure(state)
     (for {
       proj <- structure.allProjects
