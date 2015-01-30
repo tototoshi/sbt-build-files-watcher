@@ -1,5 +1,7 @@
 # sbt-build-files-watcher
 
+![screenshot](./screenshot.png)
+
 ## Install
 
 ```scala
