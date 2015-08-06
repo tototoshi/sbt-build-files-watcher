@@ -5,13 +5,14 @@
 ## Install
 
 ```scala
+// ~/.sbt/0.13/plugins/build.sbt
 addSbtPlugin("com.github.tototoshi" % "sbt-build-files-watcher" % "0.1.1")
 ```
 
 ## Usage
 
 ```scala
-// build.sbt
+// ~/.sbt/0.13/build.sbt
 showMessageOnBuildFilesChanged
 ```
 
