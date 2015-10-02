@@ -22,3 +22,8 @@ shellPrompt := { state =>
   messageOnBuildFilesChanged(state) + GitCommand.prompt(state)
 }
 ```
+
+The message printed when the build files have changed can be customized by changing the ```reloadMessage``` setting:
+ ```scala
+ reloadMessage := scala.Console.RED + "Build files changed. Please reload." + scala.Console.RESET + "\n"
+ ```
