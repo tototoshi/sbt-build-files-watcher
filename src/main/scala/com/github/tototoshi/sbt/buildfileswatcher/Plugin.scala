@@ -21,8 +21,6 @@ import scala.collection.mutable.{ Map => MutableMap }
 
 object Plugin extends sbt.Plugin {
 
-  val reloadMessage = settingKey[String]("The message printed when build files have changed")
-
   private var buildFilesHashOnLoad: Option[Map[File, Seq[Byte]]] = None
 
   private def getBuildFiles(base: File): Seq[File] = {
@@ -45,7 +43,7 @@ object Plugin extends sbt.Plugin {
     val files = listBuildFiles(state)
     buildFilesHashOnLoad match {
       case Some(h) if h != hash(files) =>
-        reloadMessage.value
+        scala.Console.RED + "Build files changed. Please reload." + scala.Console.RESET + "\n"
       case Some(_) =>
         ""
       case None =>
@@ -60,8 +58,6 @@ object Plugin extends sbt.Plugin {
       messageOnBuildFilesChanged(state) + "> "
     }
 
-  override lazy val settings = Seq(
-    reloadMessage := scala.Console.RED + "Build files changed. Please reload." + scala.Console.RESET + "\n"
-  )
+  override lazy val settings = Seq.empty
 
 }
