@@ -19,7 +19,7 @@ import sbt._
 import Keys._
 import scala.collection.mutable.{ Map => MutableMap }
 
-object Plugin extends sbt.Plugin {
+object BuildFileWatcherPlugin extends sbt.AutoPlugin {
 
   private var buildFilesHashOnLoad: Option[Map[File, Seq[Byte]]] = None
 
@@ -39,25 +39,24 @@ object Plugin extends sbt.Plugin {
     } yield file).distinct
   }
 
-  val messageOnBuildFilesChanged: State => String = { state =>
-    val files = listBuildFiles(state)
-    buildFilesHashOnLoad match {
-      case Some(h) if h != hash(files) =>
-        scala.Console.RED + "Build files changed. Please reload." + scala.Console.RESET + "\n"
-      case Some(_) =>
-        ""
-      case None =>
-        // set initial build file hash
-        buildFilesHashOnLoad = Some(hash(files))
-        ""
+  object autoImport {
+    val messageOnBuildFilesChanged: State => String = { state =>
+      val files = listBuildFiles(state)
+      buildFilesHashOnLoad match {
+        case Some(h) if h != hash(files) =>
+          scala.Console.RED + "Build files changed. Please reload." + scala.Console.RESET + "\n"
+        case Some(_) =>
+          ""
+        case None =>
+          // set initial build file hash
+          buildFilesHashOnLoad = Some(hash(files))
+          ""
+      }
     }
+
+    val showMessageOnBuildFilesChanged: Setting[_] =
+      shellPrompt := { state =>
+        messageOnBuildFilesChanged(state) + "> "
+      }
   }
-
-  val showMessageOnBuildFilesChanged: Setting[_] =
-    shellPrompt := { state =>
-      messageOnBuildFilesChanged(state) + "> "
-    }
-
-  override lazy val settings = Seq.empty
-
 }
