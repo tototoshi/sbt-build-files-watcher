@@ -4,4 +4,9 @@ jdk:
   - oraclejdk8
 
 script:
-  - sbt compile
+  - sbt "^^ ${SBT_VERSION}" compile
+
+matrix:
+  include:
+  - env: SBT_VERSION="0.13.16"
+  - env: SBT_VERSION="1.0.0"
