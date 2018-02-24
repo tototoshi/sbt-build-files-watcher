@@ -2,7 +2,7 @@ name := "sbt-build-files-watcher"
 
 organization := "com.github.tototoshi"
 
-version := "0.1.2-SNAPSHOT"
+version := "0.2.0"
 
 sbtPlugin := true
 
