@@ -6,6 +6,8 @@ version := "0.1.2-SNAPSHOT"
 
 sbtPlugin := true
 
+crossSbtVersions := Seq("0.13.17", "1.1.0")
+
 publishMavenStyle := true
 
 publishArtifact in Test := false
